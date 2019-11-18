@@ -1,90 +1,86 @@
 const fs = require('fs');
 
 module.exports = {
-    addPlayerPage: (req, res) => {
-        res.render('add-player.ejs', {
-            title: "Welcome to Socka | Add a new player"
-            ,message: ''
+    addProductPage: (req, res) => {
+        res.render('addProduct.ejs', {
+            title: "Add products",
+            message: ''
         });
     },
-    addPlayer: (req, res) => {
+    addProduct: (req, res) => {
         if (!req.files) {
             return res.status(400).send("No files were uploaded.");
         }
 
         let message = '';
-        let first_name = req.body.first_name;
-        let last_name = req.body.last_name;
-        let position = req.body.position;
-        let number = req.body.number;
-        let username = req.body.username;
+        let title = req.body.title;
+        let description = req.body.description;
+        let price = req.body.price;
+        let location = req.body.location;
+        let categoryName = req.body.categoryName;
         let uploadedFile = req.files.image;
         let image_name = uploadedFile.name;
         let fileExtension = uploadedFile.mimetype.split('/')[1];
-        image_name = username + '.' + fileExtension;
+        image_name = "img-"+ Date.now() + '.' + fileExtension;
 
-        let usernameQuery = "SELECT * FROM `players` WHERE user_name = '" + username + "'";
+        
 
-        db.query(usernameQuery, (err, result) => {
-            if (err) {
-                return res.status(500).send(err);
-            }
-            if (result.length > 0) {
-                message = 'Username already exists';
-                res.render('add-player.ejs', {
-                    message,
-                    title: "Welcome to Socka | Add a new player"
-                });
-            } else {
-                // check the filetype before uploading it
-                if (uploadedFile.mimetype === 'image/png' || uploadedFile.mimetype === 'image/jpeg' || uploadedFile.mimetype === 'image/gif') {
-                    // upload the file to the /public/assets/img directory
-                    uploadedFile.mv(`public/assets/img/${image_name}`, (err ) => {
-                        if (err) {
-                            return res.status(500).send(err);
-                        }
-                        // send the player's details to the database
-                        let query = "INSERT INTO `players` (first_name, last_name, position, number, image, user_name) VALUES ('" +
-                            first_name + "', '" + last_name + "', '" + position + "', '" + number + "', '" + image_name + "', '" + username + "')";
-                        db.query(query, (err, result) => {
-                            if (err) {
-                                return res.status(500).send(err);
-                            }
-                            res.redirect('/');
-                        });
-                    });
-                } else {
-                    message = "Invalid File format. Only 'gif', 'jpeg' and 'png' images are allowed.";
-                    res.render('add-player.ejs', {
-                        message,
-                        title: "Welcome to Socka | Add a new player"
-                    });
+
+        if (uploadedFile.mimetype === 'image/png' || uploadedFile.mimetype === 'image/jpeg' || uploadedFile.mimetype === 'image/gif') {
+            // upload the file to the /public/assets/img directory
+            uploadedFile.mv(`public/assets/img/${image_name}`, (err ) => {
+                if (err) {
+                    return res.status(500).send(err);
                 }
-            }
-        });
+                // send the player's details to the database
+                var image  = image_name;
+                let query = "INSERT INTO `Products` (title, description, price, location, categoryName, image) VALUES ('" +
+                    title + "', '" + description + "', '" + price + "', '" + location + "', '"  + categoryName + "', '" + image +  "')";
+                    console.log("categry Name", categoryName);
+                db.query(query, (err, result) => {
+                    if (err) {
+                        return res.status(500).send(err);
+                    }
+                    res.redirect('/');
+                });
+            });
+        } else {
+            message = "Invalid File format. Only 'gif', 'jpeg' and 'png' images are allowed.";
+            res.render('addProduct.ejs', {
+                message,
+                title: "Add a new Product"
+            });
+        }
     },
-    editPlayerPage: (req, res) => {
-        let playerId = req.params.id;
-        let query = "SELECT * FROM `players` WHERE id = '" + playerId + "' ";
+    editProductPage: (req, res) => {
+        console.log("product Id ", req.body);
+        let productId = req.params.id;
+        let query = "SELECT * FROM `Products` WHERE productId = '" + productId + "' ";
         db.query(query, (err, result) => {
             if (err) {
                 return res.status(500).send(err);
             }
-            res.render('edit-player.ejs', {
-                title: "Edit  Player"
-                ,player: result[0]
+            res.render('editProduct.ejs', {
+                title: "Edit  Product"
+                ,product: result[0]
                 ,message: ''
             });
         });
     },
-    editPlayer: (req, res) => {
-        let playerId = req.params.id;
-        let first_name = req.body.first_name;
-        let last_name = req.body.last_name;
-        let position = req.body.position;
-        let number = req.body.number;
+    editProduct: (req, res) => {
+        let productId = req.body.productId;
+        let title = req.body.title;
+        let description = req.body.description;
+        let price = req.body.price;
+        let location = req.body.location;
+        let categoryName = req.body.categoryName;
+        // let uploadedFile = req.files.image;
+        // let image_name = uploadedFile.name;
+        // let fileExtension = uploadedFile.mimetype.split('/')[1];
+        // image_name = "img-"+ Date.now() + '.' + fileExtension;
 
-        let query = "UPDATE `players` SET `first_name` = '" + first_name + "', `last_name` = '" + last_name + "', `position` = '" + position + "', `number` = '" + number + "' WHERE `players`.`id` = '" + playerId + "'";
+        let query = "UPDATE `Products` SET `title` = '" + title + "', `description` = '" + description + "', `price` = '" + price + "', `location` = '" + location + "', `categoryName` = '" + categoryName + "' WHERE `Products`.`productId` = '" + productId + "'";
+
         db.query(query, (err, result) => {
             if (err) {
                 return res.status(500).send(err);
@@ -92,10 +88,10 @@ module.exports = {
             res.redirect('/');
         });
     },
-    deletePlayer: (req, res) => {
-        let playerId = req.params.id;
-        let getImageQuery = 'SELECT image from `players` WHERE id = "' + playerId + '"';
-        let deleteUserQuery = 'DELETE FROM players WHERE id = "' + playerId + '"';
+    deleteProduct: (req, res) => {
+        let productId = req.params.id;
+        let getImageQuery = 'SELECT image from `Products` WHERE productId = "' + productId + '"';
+        let deleteUserQuery = 'DELETE FROM Products WHERE productId = "' + productId + '"';
 
         db.query(getImageQuery, (err, result) => {
             if (err) {

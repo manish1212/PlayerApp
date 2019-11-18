@@ -5,8 +5,8 @@ const mysql = require('mysql');
 const path = require('path');
 const app = express();
 
-const {getHomePage} = require('./routes/index');
-const {addPlayerPage, addPlayer, deletePlayer, editPlayer, editPlayerPage} = require('./routes/player');
+const {getHomePage, searchProducts} = require('./routes/index');
+const {addProductPage, addProduct, editProduct, editProductPage, deleteProduct} = require('./routes/player');
 const port = 5000;
 
 // create connection to database
@@ -14,7 +14,7 @@ const port = 5000;
 const db = mysql.createConnection ({
     host: 'localhost',
     user: 'root',
-    database: 'socka'
+    database: 'test2'
 });
 
 // connect to database
@@ -38,11 +38,12 @@ app.use(fileUpload()); // configure fileupload
 // routes for the app
 
 app.get('/', getHomePage);
-app.get('/add', addPlayerPage);
-app.get('/edit/:id', editPlayerPage);
-app.get('/delete/:id', deletePlayer);
-app.post('/add', addPlayer);
-app.post('/edit/:id', editPlayer);
+app.post('/searchProducts', searchProducts);
+app.get('/addProduct', addProductPage);
+app.get('/editProduct/:id', editProductPage);
+app.get('/deleteProduct/:id', deleteProduct);
+app.post('/addProduct', addProduct);
+app.post('/editProduct/:id', editProduct);
 
 
 // set the app to listen on the port

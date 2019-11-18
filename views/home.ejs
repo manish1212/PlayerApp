@@ -1,0 +1,35 @@
+<% include partials/header.ejs %>
+    <div class="table-wrapper">
+        <% if (products.length > 0) {%>
+            <form class="add-player-form" action="/searchProducts" method="post" enctype="multipart/form-data">
+                <div class="form-row">
+                    <div class="form-group col-md-3">
+                                <select id="position" name="categoryName" class="form-control" required>
+                                    <option selected disabled>Choose category</option>
+                                    <option>Books</option>
+                                    <option>Furniture</option>
+                                    <option>Electronics</option>
+                                    <option>Clothing</option>
+                                    <option>Sports</option>
+                                </select>
+                    </div>
+                    <div class="form-group col-md-6">
+                            <input type="text" class="form-control" name="search" id="search" placeholder="Search Product">
+                    </div>
+                    <div class="form-group col-md-3">
+                            <button type="submit" class="btn btn-primary float-right">Search</button>
+                    </div>
+                    
+                </div>
+                <div class="form-row">
+                        
+                </div>
+               
+            </form>
+        <% } else { %>
+            <p class="text-center">No Products found. Go <a href="/searchProducts" >here</a> to add products.</p>
+        <% } %>
+    </div>
+</div>
+</body>
+</html>
